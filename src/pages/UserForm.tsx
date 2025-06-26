@@ -26,9 +26,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import Toastify from 'toastify-js'
+import "toastify-js/src/toastify.css"
+
 const UserForm = () => {
   const navigate = useNavigate();
   const [show, setShow] = useState(false);
+
+  const toast = (message: any)=>{
+      Toastify({
+        duration: 3000,
+        text:message,
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: "left", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          background: "linear-gradient(to right, #00b09b, #96c93d)",
+        },
+        onClick: function(){} // Callback after click
+      }).showToast();
+  } 
 
   const {
     register,
@@ -43,10 +61,14 @@ const UserForm = () => {
   });
 
   const onSubmit = async (data: UserSchemaType) => {
-    const process = await instance.post(`admin/create/user`, data);
-    if (process.status === 201) {
-      console.log(process.data.message);
+    try {
+      const process = await instance.post(`admin/create/user`, data);
+
+      toast(process.data.message)
       navigate("/users");
+
+    } catch (err) {
+      toast(err.response.data.message)
     }
   };
 

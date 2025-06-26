@@ -18,9 +18,27 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import instance from "@/lib/axios";
 
+import Toastify from 'toastify-js'
+import "toastify-js/src/toastify.css"
+
 const LeaveForm = () => {
   const navigate = useNavigate();
 
+  const toast = (message: any)=>{
+      Toastify({
+        duration: 3000,
+        text:message,
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: "left", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          background: "linear-gradient(to right, #00b09b, #96c93d)",
+        },
+        onClick: function(){} // Callback after click
+      }).showToast();
+  }  
+ 
   const {
     register,
     handleSubmit,
@@ -30,10 +48,16 @@ const LeaveForm = () => {
   });
 
   const onSubmit = async (data: LeaveSchemaType) => {
+   try{
     const response = await instance.post("leave", data);
     if (response.status === 200) {
+      toast(response.data.message)
       navigate("/");
     }
+   }catch(err){
+      toast(err.response.data.message)
+   }
+
   };
 
   return (

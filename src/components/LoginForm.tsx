@@ -63,8 +63,8 @@ export default function LoginForm({
       navigate("/");
     } catch (err) {
       console.error("Login gagal", err);
-       toast(err.response.data.message)
-    }
+      toast(err.response.data.message)
+    } 
   };
 
   return (

@@ -12,19 +12,24 @@ import {
 import { Home, Settings } from "lucide-react"
 import { Link } from 'react-router-dom'
 
-// Menu items.
-let items:any[]= [];
+import { useMemo } from "react";
 
-if(localStorage.getItem('role')=='User'){
-    items.push({
+type MenuItem = {
+  title: string;
+  url: string;
+  icon: React.ElementType;
+};
+
+// Semua menu berdasarkan role
+const MENU_BY_ROLE: Record<string, MenuItem[]> = {
+  User: [
+    {
       title: "Dashboard",
       url: "/",
       icon: Home,
-  });
-}
-
-if (localStorage.getItem("role") == "Verifikator" || localStorage.getItem("role") == "Admin") {
-  items.push(
+    },
+  ],
+  Verifikator: [
     {
       title: "Dashboard",
       url: "/",
@@ -34,21 +39,30 @@ if (localStorage.getItem("role") == "Verifikator" || localStorage.getItem("role"
       title: "User Manager",
       url: "/users",
       icon: Settings,
-    }
-  );
-}
-
-// if (localStorage.getItem("role") == "Admin") {
-//   items.push(
-//     {
-//       title: "User Manager",
-//       url: "/users",
-//       icon: Settings,
-//     }
-//   );
-// }
+    },
+  ],
+  Admin: [
+    {
+      title: "Dashboard",
+      url: "/",
+      icon: Home,
+    },
+    {
+      title: "User Manager",
+      url: "/users",
+      icon: Settings,
+    },
+  ],
+};
 
 export function AppSidebar() {
+
+  const role = localStorage.getItem("role") ?? "User";
+
+  const menuItems = useMemo(() => {
+    return MENU_BY_ROLE[role] || [];
+  }, [role]);
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -56,7 +70,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <Link to={item.url}>

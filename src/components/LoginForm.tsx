@@ -20,6 +20,9 @@ import instance from "@/lib/axios";
 import { useNavigate } from "react-router-dom";
 import { login } from "@/features/auth/authSlice";
 
+import Toastify from 'toastify-js'
+import "toastify-js/src/toastify.css"
+
 export default function LoginForm({
   className,
   ...props
@@ -36,11 +39,27 @@ export default function LoginForm({
     resolver: zodResolver(loginSchema),
   });
 
+  const toast = (message: any)=>{
+        Toastify({
+          duration: 3000,
+          text:message,
+          close: true,
+          gravity: "top", // `top` or `bottom`
+          position: "left", // `left`, `center` or `right`
+          stopOnFocus: true, // Prevents dismissing of toast on hover
+          style: {
+            background: "linear-gradient(to right, #00b09b, #96c93d)",
+          },
+          onClick: function(){} // Callback after click
+        }).showToast();
+  }
+
   const loginProcess = async (data: LoginSchemaType) => {
     try {
       const process = await instance.post("/login", data);
       const { token, user } = process.data;
       dispatch(login({ token, user }));
+      toast(process.data.message)
       navigate("/");
     } catch (err) {
       console.error("Login gagal", err);

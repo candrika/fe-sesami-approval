@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import instance from "@/lib/axios";
+import Toastify from 'toastify-js'
+import "toastify-js/src/toastify.css"
 
 export default function RegisForm({ className, ...props }: React.ComponentProps<"div">) {
   const [show, setShow] = useState(false);
@@ -29,12 +31,34 @@ export default function RegisForm({ className, ...props }: React.ComponentProps<
     resolver: zodResolver(registerSchema),
   });
 
+  const toast = (message: any)=>{
+      Toastify({
+        duration: 3000,
+        text:message,
+        close: true,
+        gravity: "top", // `top` or `bottom`
+        position: "left", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          background: "linear-gradient(to right, #00b09b, #96c93d)",
+        },
+        onClick: function(){} // Callback after click
+      }).showToast();
+  }
+
   const registerProcess = async(data: RegisterSchemaType) => {
     console.log("Form berhasil:", data);
-    const process = await instance.post('register',data)
+     try {
+      const process = await instance.post("/register", data);
+      
 
-    if(process.status==201)
-    navigate('/login')
+      toast(process.data.message)
+      navigate("/");
+    } catch (err) {
+      // console.error("Register gagal", err.response.data.message);
+      toast(err.response.data.message)
+    } 
+  
   };
 
   return (
